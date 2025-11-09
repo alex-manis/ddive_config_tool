@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "outDir": "public/client",
+    "rootDir": "src/client",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "lib": ["DOM", "ESNext"],
+    "types": []
+  },
+  "include": ["src/client/**/*"]
+}

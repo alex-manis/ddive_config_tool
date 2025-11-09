@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeeperDive Publisher Config Tool</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header" id="main-header">
+      <h1 class="header__title" id="app-title">
+        <img
+          src="/assets/Lgo-DeepreDive-V02.svg"
+          alt="DeeperDive logo"
+          height="40"
+        />
+        Publisher Config Tool
+      </h1>
+    </header>
+
+    <div class="container" id="container">
+      <aside class="sidebar" id="sidebar">
+        <div class="publishers-section">
+          <h2>Publishers</h2>
+          <button type="button" id="create-new-btn">
+            Create New Publisher
+          </button>
+          <input
+            type="text"
+            id="publisher-search"
+            placeholder="Search publishers..."
+          />
+          <ul id="publisher-list" class="publisher-list"></ul>
+        </div>
+      </aside>
+
+      <main class="editor" id="editor">
+        <h2 class="editor__title" id="editor-title">
+          <span class="editor__title-text" id="editor-title-text"
+            >Select a publisher or <span id="create-link">create</span> a new
+            one</span
+          >
+          <div id="title-loader" class="loader-inline"></div>
+        </h2>
+        <form class="form publisher-form" id="publisher-form">
+          <label>
+            Publisher ID:
+            <input type="text" name="publisherId" disabled required />
+          </label>
+          <label>
+            Alias Name:
+            <input type="text" name="aliasName" required />
+          </label>
+          <label>
+            Active:
+            <input type="checkbox" name="isActive" />
+          </label>
+
+          <div class="form-section">
+            <h3 class="collapsible">Pages</h3>
+            <div class="collapsible-content">
+              <table id="pages-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Selector</th>
+                    <th>Position</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="pages-table-body"></tbody>
+              </table>
+              <button type="button" id="add-page" class="button">
+                Add Page
+              </button>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="collapsible">Dashboards</h3>
+            <div class="collapsible-content">
+              <label>
+                Publisher Dashboard:
+                <input type="url" name="publisherDashboard" />
+              </label>
+              <label>
+                Monitor Dashboard:
+                <input type="url" name="monitorDashboard" />
+              </label>
+              <label>
+                QA Status Dashboard:
+                <input type="url" name="qaStatusDashboard" />
+              </label>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="collapsible">Custom CSS</h3>
+            <div class="collapsible-content">
+              <textarea name="customCss" rows="5"></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="collapsible">Tags</h3>
+            <div class="collapsible-content">
+              <input type="text" name="tags" placeholder="Comma separated" />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="collapsible">Notes</h3>
+            <div class="collapsible-content">
+              <textarea name="notes" rows="5"></textarea>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="collapsible">Additional Fields</h3>
+            <div class="collapsible-content">
+              <table id="extra-fields-table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="extra-fields-body"></tbody>
+              </table>
+              <button type="button" id="add-extra-field">Add Field</button>
+            </div>
+          </div>
+
+          <div id="buttons">
+            <button type="button" id="save-btn">Save</button>
+            <button type="button" id="delete-btn" class="danger">Delete</button>
+            <button type="button" id="cancel-btn">Cancel</button>
+            <button type="button" id="view-json-btn">View JSON</button>
+          </div>
+        </form>
+        <pre id="json-viewer"></pre>
+      </main>
+    </div>
+
+    <script type="module" src="client/app.js"></script>
+
+    <footer class="footer">
+      <span>© 2025 DeeperDive. All rights reserved.</span>
+      <a
+        href="https://www.taboola.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer__logo"
+      >
+        <span>Powered by</span>
+        <img src="/assets/Taboola_Logo_Dark.svg" alt="Taboola" />
+      </a>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+import { fetchPublishers } from "./api/publishers.js";
+import { state } from "./state/appState.js";
+import { renderPublisherList } from "./components/PublisherList.js";
+import { updateEditorUIVisibility } from "./ui.js";
+import { initializeEventListeners } from "./events.js";
+import { handleError } from "./errorHandler.js";
+
+export async function main() {
+  try {
+    state.allPublishers = await fetchPublishers();
+    renderPublisherList(state.allPublishers);
+    updateEditorUIVisibility("initial");
+  } catch (error) {
+    handleError("Could not load the list of publishers. Please check the server connection and try again.", error);
+  }
+}
+
+initializeEventListeners();
+main().catch(e => console.error(e));
