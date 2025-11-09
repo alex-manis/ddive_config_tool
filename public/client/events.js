@@ -7,13 +7,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { deletePublisher, fetchPublishers, savePublisher } from "./api/publishers.js";
+import { createPublisher, deletePublisher, getPublishers, savePublisher } from "./api/publishers.js";
 import { computeDiffHTML, hideJsonViewer, showJsonViewer } from "./components/JsonDiffViewer.js";
 import { initExtraFieldsTable } from "./components/ExtraFieldsTable.js";
 import { initPagesTable } from "./components/PagesTable.js";
 import { renderPublisherList } from "./components/PublisherList.js";
 import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./editor.js";
-import { hasUnsavedChanges, state, setDirty, resetFormState } from "./state/appState.js";
+import { hasUnsavedChanges, state, setDirty } from "./state/appState.js";
 import { cancelBtn, createNewBtn, deleteBtn, form, appTitle, jsonViewer, publisherListEl, saveBtn, viewJsonBtn, editorTitle } from "./utils/dom.js";
 import { collectFormData } from "./utils/form.js";
 import { validateForm } from "./utils/validation.js";
@@ -106,6 +106,22 @@ export function initializeEventListeners() {
             showJsonViewer(diffHtml);
         }
     });
+    // Refresh the publisher list and optionally select a publisher
+    function refreshPublisherList(selectedFilename) {
+        return __awaiter(this, void 0, void 0, function* () {
+            state.allPublishers = yield getPublishers();
+            renderPublisherList(state.allPublishers);
+            if (selectedFilename) {
+                yield onSelectPublisher(selectedFilename);
+            }
+            else {
+                resetEditorView();
+                state.currentPublisher = null;
+                state.currentFilename = "";
+                state.isCreating = false;
+            }
+        });
+    }
     // Create new publisher button functionality
     const createNewHandler = () => {
         if (hasUnsavedChanges() && !confirm("You have unsaved changes. Are you sure you want to start creating a new publisher?")) {
@@ -134,7 +150,7 @@ export function initializeEventListeners() {
         withLoading(() => __awaiter(this, void 0, void 0, function* () {
             yield deletePublisher(state.currentFilename);
             alert("Publisher deleted successfully.");
-            resetEditorView();
+            yield refreshPublisherList();
         }), "Error deleting publisher.");
     }));
     // Save button functionality
@@ -145,18 +161,17 @@ export function initializeEventListeners() {
         if (!data)
             return;
         withLoading(() => __awaiter(this, void 0, void 0, function* () {
-            const { newFilename } = yield savePublisher(state.currentFilename, data, state.isCreating);
-            alert("Publisher saved!");
+            let newFilename;
             if (state.isCreating) {
-                state.allPublishers = yield fetchPublishers();
-                renderPublisherList(state.allPublishers);
-                yield onSelectPublisher(newFilename);
+                const result = yield createPublisher(data);
+                newFilename = result.newFilename;
             }
             else {
-                state.originalPublisherData = JSON.parse(JSON.stringify(data));
-                resetFormState();
-                validateForm();
+                const result = yield savePublisher(state.currentFilename, data);
+                newFilename = result.newFilename;
             }
+            alert("Publisher saved!");
+            yield refreshPublisherList(newFilename);
         }), "Error saving publisher.");
     }));
     // Warn user of unsaved changes before leaving the page

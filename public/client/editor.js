@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { fetchPublisher } from "./api/publishers.js";
+import { getPublisher } from "./api/publishers.js";
 import { hideJsonViewer } from "./components/JsonDiffViewer.js";
 import { state, resetFormState, hasUnsavedChanges } from "./state/appState.js";
 import { updateEditorUIVisibility } from "./ui.js";
@@ -18,7 +18,7 @@ export function onSelectPublisher(file) {
     return __awaiter(this, void 0, void 0, function* () {
         state.isCreating = false;
         state.currentFilename = file;
-        state.currentPublisher = yield fetchPublisher(state.currentFilename);
+        state.currentPublisher = yield getPublisher(state.currentFilename);
         state.originalPublisherData = JSON.parse(JSON.stringify(state.currentPublisher));
         fillForm(state.currentPublisher);
         form.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid"));

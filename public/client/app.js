@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { fetchPublishers } from "./api/publishers.js";
+import { getPublishers } from "./api/publishers.js";
 import { state } from "./state/appState.js";
 import { renderPublisherList } from "./components/PublisherList.js";
 import { updateEditorUIVisibility } from "./ui.js";
@@ -17,7 +17,7 @@ import { handleError } from "./errorHandler.js";
 export function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            state.allPublishers = yield fetchPublishers();
+            state.allPublishers = yield getPublishers();
             renderPublisherList(state.allPublishers);
             updateEditorUIVisibility("initial");
         }

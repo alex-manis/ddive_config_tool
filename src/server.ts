@@ -41,33 +41,58 @@ app.get("/api/publisher/:filename", async (req, res) => {
   }
 });
 
-// API endpoint to save a publisher config
+// API endpoint to update a publisher config
 app.put("/api/publisher/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
-    const isCreating = req.headers["x-is-creating"] === "true";
+    const dataPath = path.join(__dirname, "../data", filename);
+
+     await fs.writeFile(dataPath, JSON.stringify(req.body, null, 2), "utf-8");
+
+    const publishersListPath = path.join(__dirname, "../data/publishers.json");
+    const publishersListData = await fs.readFile(publishersListPath, "utf-8");
+    const publishersList = JSON.parse(publishersListData);
+
+    const publisherIndex = publishersList.publishers.findIndex((p: PublisherListItem) => p.file === filename);
+    if (publisherIndex !== -1) {
+      publishersList.publishers[publisherIndex].alias = req.body.aliasName;
+    }
+
+      publishersList.publishers.sort((a: PublisherListItem, b: PublisherListItem) => a.alias.localeCompare(b.alias));
+    await fs.writeFile(publishersListPath, JSON.stringify(publishersList, null, 2), "utf-8");
+
+    res.json({ success: true, filename });
+  } catch (error) {
+    console.error("Error updating publisher:", error);
+    res.status(500).json({ error: "Failed to save publisher config" });
+  }
+});
+
+// API endpoint to create a publisher config
+app.post("/api/publisher/:filename", async (req, res) => {
+  try {
+    const { filename } = req.params;
     const dataPath = path.join(__dirname, "../data", filename);
 
     await fs.writeFile(dataPath, JSON.stringify(req.body, null, 2), "utf-8");
 
-    if (isCreating) {
-      const publishersListPath = path.join(__dirname, "../data/publishers.json");
-      const publishersListData = await fs.readFile(publishersListPath, "utf-8");
-      const publishersList = JSON.parse(publishersListData);
+    const publishersListPath = path.join(__dirname, "../data/publishers.json");
+    const publishersListData = await fs.readFile(publishersListPath, "utf-8");
+    const publishersList = JSON.parse(publishersListData);
 
-      publishersList.publishers.push({
-        id: req.body.publisherId,
-        alias: req.body.aliasName,
-        file: filename,
-      });
+    publishersList.publishers.push({
+      id: req.body.publisherId,
+      alias: req.body.aliasName,
+      file: filename,
+    });
 
-      publishersList.publishers.sort((a: PublisherListItem, b: PublisherListItem) => a.alias.localeCompare(b.alias));
-      await fs.writeFile(publishersListPath, JSON.stringify(publishersList, null, 2), "utf-8");
-    }
+    publishersList.publishers.sort((a: PublisherListItem, b: PublisherListItem) => a.alias.localeCompare(b.alias));
+    await fs.writeFile(publishersListPath, JSON.stringify(publishersList, null, 2), "utf-8");
 
-    res.json({ success: true, filename });
+    res.status(201).json({ success: true, filename });
   } catch (error) {
-    res.status(500).json({ error: "Failed to save publisher config" });
+    console.error("Error creating publisher:", error);
+    res.status(500).json({ error: "Failed to create publisher config" });
   }
 });
 
@@ -92,6 +117,7 @@ app.delete("/api/publisher/:filename", async (req, res) => {
     res.status(500).json({ error: "Failed to delete publisher config" });
   }
 });
+
 
 // Start the server
 if (process.env.NODE_ENV !== "test") {

@@ -1,59 +1,59 @@
 import type { PublisherConfig, PublisherListItem } from "../types/interfaces.js";
+import { BASE_URL } from "../constants.js";
 
-// Universal error handler for API responses
-async function handleApiError(response: Response, baseMessage: string): Promise<never> {
-  let details = response.statusText;
-  try {
-    const errorData = await response.json();
-    if (errorData && errorData.error) {
-      details = errorData.error;
-    }
-  } catch (e) {
+
+// Helper function to check fetch responses
+async function checkResponse<T>(res: Response): Promise<T> {
+  
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+ 
+    const errorMessage = data?.error || res.statusText || `Request failed with status ${res.status}`;
+    throw new Error(errorMessage);
   }
-  throw new Error(`${baseMessage}: ${details} (status: ${response.status})`);
+  return data;
 }
 
 // Fetch the list of publishers
-export async function fetchPublishers(): Promise<PublisherListItem[]> {
-  const response = await fetch("/api/publishers");
-  if (!response.ok) {
-    return handleApiError(response, "Failed to fetch publishers");
-  }
-  const data = await response.json();
-  return data.publishers || [];
+export function getPublishers(): Promise<PublisherListItem[]> {
+  return fetch(`${BASE_URL}/publishers`)
+    .then(checkResponse<{ publishers: PublisherListItem[] }>)
+    .then(data => data.publishers || []);
 }
 
 // Fetch a single publisher by filename
-export async function fetchPublisher(filename: string): Promise<PublisherConfig> {
-  const response = await fetch(`/api/publisher/${filename}`);
-  if (!response.ok) {
-    return handleApiError(response, `Failed to fetch publisher '${filename}'`);
-  }
-  return response.json();
+export function getPublisher(filename: string): Promise<PublisherConfig> {
+  return fetch(`${BASE_URL}/publisher/${filename}`).then(res => checkResponse<PublisherConfig>(res));
 }
 
-// Save or create a publisher
-export async function savePublisher(filename: string, data: PublisherConfig, isCreating: boolean): Promise<{newFilename: string}> {
-  const finalFilename = isCreating ? `${data.publisherId}.json` : filename;
-
-  const response = await fetch(`/api/publisher/${finalFilename}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "X-Is-Creating": String(isCreating) },
+// Create a new publisher
+export function createPublisher(data: PublisherConfig): Promise<{ newFilename: string }> {
+  const filename = `${data.publisherId}.json`;
+  return fetch(`${BASE_URL}/publisher/${filename}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data, null, 2),
-  });
-  if (!response.ok) {
-    return handleApiError(response, `Failed to save publisher '${finalFilename}'`);
-  }
-  return { newFilename: finalFilename };
+  })
+    .then(checkResponse)
+    .then(() => ({ newFilename: filename }));
+}
+
+// Update an existing publisher
+export function savePublisher(filename: string, data: PublisherConfig): Promise<{ newFilename: string }> {
+  return fetch(`${BASE_URL}/publisher/${filename}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data, null, 2),
+  })
+    .then(checkResponse)
+    .then(() => ({ newFilename: filename }));
 }
 
 // Delete a publisher by filename
-export async function deletePublisher(filename: string): Promise<void> {
-  const response = await fetch(`/api/publisher/${filename}`, {
+export function deletePublisher(filename: string): Promise<void> {
+  return fetch(`${BASE_URL}/publisher/${filename}`, {
     method: "DELETE",
-  });
-
-  if (!response.ok) {
-    return handleApiError(response, `Failed to delete publisher '${filename}'`);
-  }
+  })
+  .then(checkResponse)
+  .then(() => undefined); 
 }

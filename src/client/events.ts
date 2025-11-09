@@ -1,4 +1,4 @@
-import { deletePublisher, fetchPublishers, savePublisher } from "./api/publishers.js";
+import { createPublisher, deletePublisher, getPublishers, savePublisher } from "./api/publishers.js";
 import { computeDiffHTML, hideJsonViewer, showJsonViewer } from "./components/JsonDiffViewer.js";
 import { initExtraFieldsTable } from "./components/ExtraFieldsTable.js";
 import { initPagesTable } from "./components/PagesTable.js";
@@ -103,6 +103,20 @@ export function initializeEventListeners() {
     }
   });
 
+  // Refresh the publisher list and optionally select a publisher
+async function refreshPublisherList(selectedFilename?: string) {
+  state.allPublishers = await getPublishers();
+  renderPublisherList(state.allPublishers);
+   if (selectedFilename) {
+    await onSelectPublisher(selectedFilename);
+  } else {
+        resetEditorView();
+    state.currentPublisher = null;
+    state.currentFilename = "";
+    state.isCreating = false;
+  }
+}
+
   // Create new publisher button functionality
   const createNewHandler = () => {
     if (hasUnsavedChanges() && !confirm("You have unsaved changes. Are you sure you want to start creating a new publisher?")) {
@@ -126,38 +140,36 @@ export function initializeEventListeners() {
 
   // Delete button functionality
   deleteBtn.addEventListener("click", async () => {
-    if (state.isCreating || !state.currentFilename) return;
-
-    if (!confirm(`Are you sure you want to delete ${state.currentPublisher?.aliasName}? This cannot be undone.`)) {
-      return;
-    }
-
-    withLoading(async () => {
-      await deletePublisher(state.currentFilename);
-      alert("Publisher deleted successfully.");
-      resetEditorView();
-    }, "Error deleting publisher.");
-  });
+  if (state.isCreating || !state.currentFilename) return;
+  if (!confirm(`Are you sure you want to delete ${state.currentPublisher?.aliasName}? This cannot be undone.`)) {
+    return;
+  }
+  withLoading(async () => {
+    await deletePublisher(state.currentFilename);
+    alert("Publisher deleted successfully.");
+  await refreshPublisherList();
+  }, "Error deleting publisher.");
+});
 
   // Save button functionality
   saveBtn.addEventListener("click", async () => {
-    if (!form.reportValidity()) return;
-    const data = collectFormData();
-    if (!data) return;
-    withLoading(async () => {
-      const { newFilename } = await savePublisher(state.currentFilename, data, state.isCreating);
-      alert("Publisher saved!");
-      if (state.isCreating) {
-        state.allPublishers = await fetchPublishers();
-        renderPublisherList(state.allPublishers);
-        await onSelectPublisher(newFilename);
-      } else {
-        state.originalPublisherData = JSON.parse(JSON.stringify(data));
-        resetFormState();
-        validateForm();
-      }
-    }, "Error saving publisher.");
-  });
+  if (!form.reportValidity()) return;
+  const data = collectFormData();
+  if (!data) return;
+
+  withLoading(async () => {
+    let newFilename: string;
+    if (state.isCreating) {
+      const result = await createPublisher(data);
+      newFilename = result.newFilename;
+    } else {
+      const result = await savePublisher(state.currentFilename, data);
+      newFilename = result.newFilename;
+    }
+    alert("Publisher saved!");
+    await refreshPublisherList(newFilename);
+  }, "Error saving publisher.");
+});
 
   // Warn user of unsaved changes before leaving the page
   window.addEventListener("beforeunload", e => {

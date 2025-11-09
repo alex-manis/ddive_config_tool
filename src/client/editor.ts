@@ -1,4 +1,4 @@
-import { fetchPublisher } from "./api/publishers.js";
+import { getPublisher } from "./api/publishers.js";
 import { hideJsonViewer } from "./components/JsonDiffViewer.js";
 import { state, resetFormState, hasUnsavedChanges } from "./state/appState.js";
 import { updateEditorUIVisibility } from "./ui.js";
@@ -9,7 +9,7 @@ import { fillForm, prepareFormForCreation } from "./utils/form.js";
 export async function onSelectPublisher(file: string) {
   state.isCreating = false;
   state.currentFilename = file;
-  state.currentPublisher = await fetchPublisher(state.currentFilename);
+  state.currentPublisher = await getPublisher(state.currentFilename);
   state.originalPublisherData = JSON.parse(JSON.stringify(state.currentPublisher));
   fillForm(state.currentPublisher);
   form.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid"));

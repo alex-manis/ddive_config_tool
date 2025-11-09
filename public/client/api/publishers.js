@@ -7,65 +7,54 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// Universal error handler for API responses
-function handleApiError(response, baseMessage) {
+import { BASE_URL } from "../constants.js";
+// Helper function to check fetch responses
+function checkResponse(res) {
     return __awaiter(this, void 0, void 0, function* () {
-        let details = response.statusText;
-        try {
-            const errorData = yield response.json();
-            if (errorData && errorData.error) {
-                details = errorData.error;
-            }
+        const data = yield res.json().catch(() => ({}));
+        if (!res.ok) {
+            const errorMessage = (data === null || data === void 0 ? void 0 : data.error) || res.statusText || `Request failed with status ${res.status}`;
+            throw new Error(errorMessage);
         }
-        catch (e) {
-        }
-        throw new Error(`${baseMessage}: ${details} (status: ${response.status})`);
+        return data;
     });
 }
 // Fetch the list of publishers
-export function fetchPublishers() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch("/api/publishers");
-        if (!response.ok) {
-            return handleApiError(response, "Failed to fetch publishers");
-        }
-        const data = yield response.json();
-        return data.publishers || [];
-    });
+export function getPublishers() {
+    return fetch(`${BASE_URL}/publishers`)
+        .then((checkResponse))
+        .then(data => data.publishers || []);
 }
 // Fetch a single publisher by filename
-export function fetchPublisher(filename) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch(`/api/publisher/${filename}`);
-        if (!response.ok) {
-            return handleApiError(response, `Failed to fetch publisher '${filename}'`);
-        }
-        return response.json();
-    });
+export function getPublisher(filename) {
+    return fetch(`${BASE_URL}/publisher/${filename}`).then(res => checkResponse(res));
 }
-// Save or create a publisher
-export function savePublisher(filename, data, isCreating) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const finalFilename = isCreating ? `${data.publisherId}.json` : filename;
-        const response = yield fetch(`/api/publisher/${finalFilename}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json", "X-Is-Creating": String(isCreating) },
-            body: JSON.stringify(data, null, 2),
-        });
-        if (!response.ok) {
-            return handleApiError(response, `Failed to save publisher '${finalFilename}'`);
-        }
-        return { newFilename: finalFilename };
-    });
+// Create a new publisher
+export function createPublisher(data) {
+    const filename = `${data.publisherId}.json`;
+    return fetch(`${BASE_URL}/publisher/${filename}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data, null, 2),
+    })
+        .then(checkResponse)
+        .then(() => ({ newFilename: filename }));
+}
+// Update an existing publisher
+export function savePublisher(filename, data) {
+    return fetch(`${BASE_URL}/publisher/${filename}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data, null, 2),
+    })
+        .then(checkResponse)
+        .then(() => ({ newFilename: filename }));
 }
 // Delete a publisher by filename
 export function deletePublisher(filename) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const response = yield fetch(`/api/publisher/${filename}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) {
-            return handleApiError(response, `Failed to delete publisher '${filename}'`);
-        }
-    });
+    return fetch(`${BASE_URL}/publisher/${filename}`, {
+        method: "DELETE",
+    })
+        .then(checkResponse)
+        .then(() => undefined);
 }

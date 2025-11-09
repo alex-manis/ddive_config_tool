@@ -1,22 +1,19 @@
 import request from "supertest";
 import fs from "fs/promises";
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { app } from "./server"; // Импортируем реальное приложение
+import { app } from "./server";
 
-// Мокаем fs/promises перед импортом сервера
 jest.mock("fs/promises");
 
 const mockedFs = fs as jest.Mocked<typeof fs>;
 
-// Вручную присваиваем моки после автоматической заглушки от Jest
 mockedFs.readFile = jest.fn();
 mockedFs.writeFile = jest.fn();
 mockedFs.unlink = jest.fn();
 
 describe("Server API", () => {
   beforeEach(() => {
-    // Сбрасываем состояние всех моков перед каждым тестом
-    jest.resetAllMocks();
+     jest.resetAllMocks();
   });
 
   describe("GET /api/publishers", () => {
@@ -61,44 +58,52 @@ describe("Server API", () => {
     });
   });
 
-  describe("PUT /api/publisher/:filename", () => {
-    it("should save a publisher config and return success", async () => {
-      const newConfig = { publisherId: "new-pub", aliasName: "New Publisher" };
+  describe("PUT /api/publisher/:filename (update)", () => {
+    it("should update a publisher config and the main list, then return success", async () => {
+      const updatedConfig = { publisherId: "existing-pub", aliasName: "Updated Publisher Name" };
+      const initialPublishers = {
+        publishers: [
+          { id: "existing-pub", alias: "Old Publisher Name", file: "existing.json" },
+          { id: "another-pub", alias: "Another Publisher", file: "another.json" },
+        ],
+      };
+
+      mockedFs.readFile.mockResolvedValueOnce(JSON.stringify(initialPublishers));
       mockedFs.writeFile.mockResolvedValue();
 
       const response = await request(app)
-        .put("/api/publisher/new.json")
-        .send(newConfig);
+        .put("/api/publisher/existing.json")
+        .send(updatedConfig);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ success: true, filename: "new.json" });
-      expect(mockedFs.writeFile).toHaveBeenCalledTimes(1);
-      expect(mockedFs.writeFile).toHaveBeenCalledWith(expect.any(String), JSON.stringify(newConfig, null, 2), "utf-8");
+      expect(response.body).toEqual({ success: true, filename: "existing.json" });
+      expect(mockedFs.writeFile).toHaveBeenCalledTimes(2); // Должен записать и файл паблишера, и список
+      expect(mockedFs.writeFile).toHaveBeenCalledWith(expect.stringContaining("existing.json"), JSON.stringify(updatedConfig, null, 2), "utf-8");
+
+      const writtenPublishersList = JSON.parse(mockedFs.writeFile.mock.calls[1][1] as string);
+      expect(writtenPublishersList.publishers[1].alias).toBe("Updated Publisher Name");
+      expect(writtenPublishersList.publishers[0].alias).toBe("Another Publisher"); // Проверяем сортировку
     });
   });
-
-  describe("PUT /api/publisher/:filename (creating new)", () => {
+  
+  describe("POST /api/publisher/:filename (create)", () => {
     it("should create a new publisher file and update the list", async () => {
       const newConfig = { publisherId: "new-pub", aliasName: "New Publisher" };
       const initialPublishers = { publishers: [{ id: "old-pub", alias: "Old Publisher", file: "old.json" }] };
-      
-      // Мок для чтения существующего списка паблишеров
+  
       mockedFs.readFile.mockResolvedValueOnce(JSON.stringify(initialPublishers));
-      // Мок для записи файла конфига и обновленного списка
       mockedFs.writeFile.mockResolvedValue();
-
+  
       const response = await request(app)
-        .put("/api/publisher/new.json")
-        .set("x-is-creating", "true")
+        .post("/api/publisher/new.json")
         .send(newConfig);
-
-      expect(response.status).toBe(200);
+  
+      expect(response.status).toBe(201);
       expect(response.body).toEqual({ success: true, filename: "new.json" });
-      // Проверяем, что writeFile был вызван дважды: для нового конфига и для списка publishers.json
       expect(mockedFs.writeFile).toHaveBeenCalledTimes(2);
-      // Проверяем запись нового конфига
+  
       expect(mockedFs.writeFile).toHaveBeenCalledWith(expect.stringContaining("new.json"), JSON.stringify(newConfig, null, 2), "utf-8");
-      // Проверяем запись обновленного списка
+  
       const expectedPublishers = {
         publishers: [
           { id: "new-pub", alias: "New Publisher", file: "new.json" },
@@ -106,6 +111,7 @@ describe("Server API", () => {
         ]
       };
       expect(mockedFs.writeFile).toHaveBeenCalledWith(expect.stringContaining("publishers.json"), JSON.stringify(expectedPublishers, null, 2), "utf-8");
+
     });
   });
 
