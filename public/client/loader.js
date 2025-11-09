@@ -1,5 +1,4 @@
-import { $ } from "./utils/dom.js";
-const loader = $("#title-loader");
+import { loader } from "./utils/dom.js";
 export function showLoader() {
     loader.style.display = "block";
 }

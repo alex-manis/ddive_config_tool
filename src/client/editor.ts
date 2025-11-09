@@ -5,6 +5,14 @@ import { updateEditorUIVisibility } from "./ui.js";
 import { form, publisherListEl } from "./utils/dom.js";
 import { fillForm, prepareFormForCreation } from "./utils/form.js";
 
+// Helper function to deselect the currently selected publisher in the list
+function deselectCurrentPublisher() {
+  const currentSelected = publisherListEl.querySelector(".publisher-list__item--selected");
+  if (currentSelected) {
+    currentSelected.classList.remove("publisher-list__item--selected");
+  }
+}
+
 // Handle selecting an existing publisher for editing
 export async function onSelectPublisher(file: string) {
   state.isCreating = false;
@@ -25,6 +33,7 @@ export function onStartCreatingPublisher() {
   state.originalPublisherData = null;
   state.currentFilename = "";
   prepareFormForCreation();
+  deselectCurrentPublisher();
   resetFormState();
   updateEditorUIVisibility("creating");
 }
@@ -39,11 +48,7 @@ export function resetEditorView() {
   state.isCreating = false;
   resetFormState();
 
-// Deselect any selected publisher in the list
-  const currentSelected = publisherListEl.querySelector(".list__item--selected");
-  if (currentSelected) {
-    currentSelected.classList.remove("list__item--selected");
-  }
+  deselectCurrentPublisher();
   hideJsonViewer();
   updateEditorUIVisibility("initial");
 }

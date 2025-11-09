@@ -1,8 +1,12 @@
 import { state } from "../state/appState.js";
 import { editorTitleText, form } from "./dom.js";
-import { collectPages, renderPages } from "../components/PagesTable.js";
-import { collectExtraFields, renderExtraFields } from "../components/ExtraFieldsTable.js";
 import { STANDARD_KEYS } from "../constants.js";
+let pagesManager;
+let extraFieldsManager;
+export function setTableManagers(pm, efm) {
+    pagesManager = pm;
+    extraFieldsManager = efm;
+}
 // Helper functions to get form values
 export function getStringValue(name) {
     const el = form.elements.namedItem(name);
@@ -30,7 +34,7 @@ export function collectFormData() {
         baseConfig.publisherId = getStringValue("publisherId");
     }
     // Assemble the final form data
-    const formData = Object.assign(Object.assign(Object.assign({}, baseConfig), { aliasName: getStringValue("aliasName"), isActive: getBoolValue("isActive"), publisherDashboard: getStringValue("publisherDashboard"), monitorDashboard: getStringValue("monitorDashboard"), qaStatusDashboard: getStringValue("qaStatusDashboard"), customCss: getStringValue("customCss"), tags: getStringValue("tags").split(",").map(s => s.trim()).filter(Boolean), notes: getStringValue("notes"), pages: collectPages() }), collectExtraFields());
+    const formData = Object.assign(Object.assign(Object.assign({}, baseConfig), { aliasName: getStringValue("aliasName"), isActive: getBoolValue("isActive"), publisherDashboard: getStringValue("publisherDashboard"), monitorDashboard: getStringValue("monitorDashboard"), qaStatusDashboard: getStringValue("qaStatusDashboard"), customCss: getStringValue("customCss"), tags: getStringValue("tags").split(",").map(s => s.trim()).filter(Boolean), notes: getStringValue("notes"), pages: pagesManager.collect() }), Object.fromEntries(extraFieldsManager.collect().filter(([key]) => key)));
     return formData;
 }
 // Fill the form with data from a PublisherConfig object
@@ -56,8 +60,8 @@ export function fillForm(data) {
         }
     }
     form.elements.namedItem("notes").value = data.notes || "";
-    renderPages(data.pages);
-    renderExtraFields(data);
+    pagesManager.render(data.pages);
+    extraFieldsManager.renderFromConfig(data);
 }
 // Prepare the form for creating a new publisher
 export function prepareFormForCreation() {

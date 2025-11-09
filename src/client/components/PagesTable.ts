@@ -1,5 +1,6 @@
 import type { Page } from "../types/interfaces.js";
 import { pagesTableBody, addPageBtn } from "../utils/dom.js";
+import { initTableManager } from "../utils/tableManager.js";
 
 // Create a table row for a page
 function createPageRow(page?: Page): HTMLTableRowElement {
@@ -8,43 +9,23 @@ function createPageRow(page?: Page): HTMLTableRowElement {
     <td><input type="text" value="${page?.pageType || ""}" required></td>
     <td><input type="text" value="${page?.selector || ""}" required></td>
     <td><input type="text" value="${page?.position || ""}" required></td>
-    <td><button type="button" class="remove-page-btn">Remove</button></td>
+    <td><button type="button" class="button remove-btn">Remove</button></td>
   `;
   return row;
 }
 
-// Render pages into the table
-export function renderPages(pages: Page[]): void {
-  pagesTableBody.innerHTML = "";
-  pages.forEach(page => pagesTableBody.appendChild(createPageRow(page)));
-}
+export type PagesManager = ReturnType<typeof initPagesTable>;
 
-// Collect pages from the table into an array
-export function collectPages(): Page[] {
-  const pages: Page[] = [];
-  pagesTableBody.querySelectorAll("tr").forEach(tr => {
-    const inputs = tr.querySelectorAll("input");
-    pages.push({
-      pageType: inputs[0].value,
-      selector: inputs[1].value,
-      position: inputs[2].value,
-    });
-  });
-  return pages;
-}
-
-// Initialize event listeners for the pages table
-export function initPagesTable(onFormInput: () => void): void {
-  addPageBtn.addEventListener("click", () => {
-    pagesTableBody.appendChild(createPageRow());
-    onFormInput();
-  });
-
-  pagesTableBody.addEventListener("click", (e) => {
-    const target = e.target as HTMLButtonElement;
-    if (target.classList.contains("remove-page-btn")) {
-      target.closest("tr")?.remove();
-      onFormInput();
-    }
+// Initialize the pages table manager
+export function initPagesTable(onFormInput: () => void) { 
+  return initTableManager<Page>({
+    tableBody: pagesTableBody,
+    addBtn: addPageBtn,
+    createRow: createPageRow,
+    collectRow: tr => {
+      const inputs = tr.querySelectorAll("input");
+      return { pageType: inputs[0].value, selector: inputs[1].value, position: inputs[2].value };
+    },
+    onChange: onFormInput
   });
 }

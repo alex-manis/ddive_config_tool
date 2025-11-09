@@ -5,9 +5,9 @@ export function renderPublisherList(list) {
     publisherListEl.innerHTML = "";
     list.forEach(publisher => {
         const li = document.createElement("li");
-        li.className = "list__item";
+        li.className = "publisher-list__item";
         if (publisher.file === state.currentFilename) {
-            li.classList.add("list__item--selected");
+            li.classList.add("publisher-list__item--selected");
         }
         li.dataset.file = publisher.file;
         li.textContent = publisher.alias;

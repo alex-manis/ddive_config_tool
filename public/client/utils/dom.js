@@ -6,19 +6,20 @@ export function $(selector) {
     return element;
 }
 // DOM elements used in the application
-export const publisherListEl = $("#publisher-list");
-export const editorTitle = $("#editor-title");
-export const form = $("#publisher-form");
-export const pagesTableBody = $("#pages-table tbody");
-export const addPageBtn = $("#add-page");
-export const saveBtn = $("#save-btn");
-export const viewJsonBtn = $("#view-json-btn");
-export const jsonViewer = $("#json-viewer");
-export const extraFieldsTableBody = $("#extra-fields-table tbody");
-export const addExtraFieldBtn = $("#add-extra-field");
-export const publisherSearchInput = $("#publisher-search");
-export const createNewBtn = $("#create-new-btn");
-export const deleteBtn = $("#delete-btn");
-export const cancelBtn = $("#cancel-btn");
-export const appTitle = $("#app-title");
-export const editorTitleText = $("#editor-title-text");
+export const publisherListEl = $(".publisher-list");
+export const editorTitle = $(".editor__title");
+export const form = $(".publisher__form");
+export const pagesTableBody = $(".publisher__pages-table-body");
+export const addPageBtn = $(".publisher__add-page");
+export const saveBtn = $(".publisher__save");
+export const viewJsonBtn = $(".publisher__view-json");
+export const jsonViewer = $(".publisher__json-viewer");
+export const extraFieldsTableBody = $(".publisher__pages-table-extra");
+export const addExtraFieldBtn = $(".publisher__add-extra-field");
+export const publisherSearchInput = $(".main__search-input");
+export const createNewBtn = $(".main__create-publisher");
+export const deleteBtn = $(".publisher__delete");
+export const cancelBtn = $(".publisher__cancel");
+export const appTitle = $(".header__title");
+export const editorTitleText = $(".editor__title-text");
+export const loader = $(".editor__title-loader");

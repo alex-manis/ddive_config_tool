@@ -4,9 +4,9 @@ import { initExtraFieldsTable } from "./components/ExtraFieldsTable.js";
 import { initPagesTable } from "./components/PagesTable.js";
 import { renderPublisherList } from "./components/PublisherList.js";
 import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./editor.js";
-import { hasUnsavedChanges, state, setDirty, resetFormState } from "./state/appState.js";
+import { hasUnsavedChanges, state, setDirty } from "./state/appState.js";
 import { cancelBtn, createNewBtn, deleteBtn, form, appTitle, jsonViewer, publisherListEl, saveBtn, viewJsonBtn, editorTitle } from "./utils/dom.js";
-import { collectFormData } from "./utils/form.js";
+import { collectFormData, setTableManagers } from "./utils/form.js";
 import { validateForm } from "./utils/validation.js";
 import { handleError } from "./errorHandler.js";
 import { showLoader, hideLoader } from "./loader.js";
@@ -27,7 +27,7 @@ function handleFormInput() {
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
 // Wrap async operations with loading spinner and error handling
-async function withLoading(requestFn: () => Promise<any>, errorMessage?: string) {
+async function withLoading(requestFn: () => Promise<unknown>, errorMessage?: string) {
   showLoader();
   try {
     await Promise.all([requestFn(), delay(300)]);
@@ -42,9 +42,11 @@ async function withLoading(requestFn: () => Promise<any>, errorMessage?: string)
 
 // Initialize all event listeners for the application
 export function initializeEventListeners() {
+  const pagesManager = initPagesTable(handleFormInput);
+  const extraFieldsManager = initExtraFieldsTable(handleFormInput);
+  setTableManagers(pagesManager, extraFieldsManager);
+
   form.addEventListener("input", handleFormInput);
-  initPagesTable(handleFormInput);
-  initExtraFieldsTable(handleFormInput);
 
    const aliasNameInput = form.elements.namedItem("aliasName") as HTMLInputElement;
   aliasNameInput.addEventListener("input", () => {
@@ -78,11 +80,11 @@ export function initializeEventListeners() {
     if (hasUnsavedChanges() && !confirm("You have unsaved changes. Continue without saving?")) {
       return;
     }
-    const currentSelected = publisherListEl.querySelector(".list__item--selected");
+    const currentSelected = publisherListEl.querySelector(".publisher-list__item--selected");
     if (currentSelected) {
-      currentSelected.classList.remove("list__item--selected");
+      currentSelected.classList.remove("publisher-list__item--selected");
     }
-    target.classList.add("list__item--selected");
+    target.classList.add("publisher-list__item--selected");
     withLoading(
       () => onSelectPublisher(selectedFile),
       `Could not load data for ${selectedFile}. The file may be missing or corrupted.`

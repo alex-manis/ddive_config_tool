@@ -1,10 +1,17 @@
-import type { PublisherConfig } from "../types/interfaces.js";
+import type { PublisherConfig, ConfigValue } from "../types/interfaces.js";
 import { state } from "../state/appState.js";
 import { editorTitleText, form } from "./dom.js";
-import { collectPages, renderPages } from "../components/PagesTable.js";
-import { collectExtraFields, renderExtraFields } from "../components/ExtraFieldsTable.js";
+import type { PagesManager } from "../components/PagesTable.js";
+import type { ExtraFieldsManager } from "../components/ExtraFieldsTable.js";
 import { STANDARD_KEYS } from "../constants.js";
 
+let pagesManager: PagesManager;
+let extraFieldsManager: ExtraFieldsManager;
+
+export function setTableManagers(pm: PagesManager, efm: ExtraFieldsManager) {
+  pagesManager = pm;
+  extraFieldsManager = efm;
+}
 // Helper functions to get form values
 export function getStringValue(name: string): string {
   const el = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
@@ -43,9 +50,9 @@ export function collectFormData(): PublisherConfig | null {
     qaStatusDashboard: getStringValue("qaStatusDashboard"),
     customCss: getStringValue("customCss"),
     tags: getStringValue("tags").split(",").map(s => s.trim()).filter(Boolean),
-    notes: getStringValue("notes"),
-    pages: collectPages(),
-    ...collectExtraFields(),
+    notes: getStringValue("notes"),    
+    pages: pagesManager.collect(),
+    ...Object.fromEntries(extraFieldsManager.collect().filter(([key]: [string, ConfigValue]) => key)),
   } as PublisherConfig;
 
   return formData;
@@ -72,8 +79,8 @@ export function fillForm(data: PublisherConfig) {
     }
   }
   (form.elements.namedItem("notes") as HTMLTextAreaElement).value = data.notes || "";
-  renderPages(data.pages);
-  renderExtraFields(data);
+  pagesManager.render(data.pages);
+  extraFieldsManager.renderFromConfig(data);
 }
 
 // Prepare the form for creating a new publisher

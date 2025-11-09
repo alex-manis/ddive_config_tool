@@ -19,6 +19,11 @@
       "id": "pub-summit",
       "alias": "Summit Insights",
       "file": "publisher-summit.json"
+    },
+    {
+      "id": "pub-test",
+      "alias": "Test Publisher",
+      "file": "pub-test.json"
     }
   ]
 }

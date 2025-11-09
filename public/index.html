@@ -14,59 +14,58 @@
     />
   </head>
   <body>
-    <header class="header" id="main-header">
-      <h1 class="header__title" id="app-title">
-        <img
-          src="/assets/Lgo-DeepreDive-V02.svg"
-          alt="DeeperDive logo"
-          height="40"
-        />
-        Publisher Config Tool
-      </h1>
+    <header class="header">
+      <img
+        class="header__logo"
+        src="/assets/Lgo-DeepreDive-V02.svg"
+        alt="DeeperDive logo"
+        height="40"
+      />
+      <h1 class="header__title">Publisher Config Tool</h1>
     </header>
 
-    <div class="container" id="container">
-      <aside class="sidebar" id="sidebar">
-        <div class="publishers-section">
-          <h2>Publishers</h2>
-          <button type="button" id="create-new-btn">
+    <main class="main">
+      <aside class="main__sidebar">
+        <div class="main__sidebar-content">
+          <h2 class="main__sidebar-title">Publishers</h2>
+          <button type="button" class="button main__create-publisher">
             Create New Publisher
           </button>
           <input
             type="text"
-            id="publisher-search"
+            class="main__search-input"
             placeholder="Search publishers..."
           />
-          <ul id="publisher-list" class="publisher-list"></ul>
+          <ul class="publisher-list"></ul>
         </div>
       </aside>
 
-      <main class="editor" id="editor">
-        <h2 class="editor__title" id="editor-title">
-          <span class="editor__title-text" id="editor-title-text"
+      <div class="main__editor">
+        <h2 class="editor__title">
+          <span class="editor__title-text"
             >Select a publisher or <span id="create-link">create</span> a new
             one</span
           >
-          <div id="title-loader" class="loader-inline"></div>
+          <div class="editor__title-loader"></div>
         </h2>
-        <form class="form publisher-form" id="publisher-form">
-          <label>
+        <form class="publisher__form">
+          <label class="publisher-form__field">
             Publisher ID:
             <input type="text" name="publisherId" disabled required />
           </label>
-          <label>
+          <label class="publisher-form__field">
             Alias Name:
             <input type="text" name="aliasName" required />
           </label>
-          <label>
+          <label class="publisher-form__field">
             Active:
             <input type="checkbox" name="isActive" />
           </label>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Pages</h3>
-            <div class="collapsible-content">
-              <table id="pages-table">
+            <div class="collapsible__content">
+              <table class="publisher__pages-table">
                 <thead>
                   <tr>
                     <th>Type</th>
@@ -75,57 +74,61 @@
                     <th></th>
                   </tr>
                 </thead>
-                <tbody id="pages-table-body"></tbody>
+                <tbody class="publisher__pages-table-body"></tbody>
               </table>
-              <button type="button" id="add-page" class="button">
+              <button
+                type="button"
+                id="add-page"
+                class="publisher__add-page button"
+              >
                 Add Page
               </button>
             </div>
           </div>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Dashboards</h3>
-            <div class="collapsible-content">
-              <label>
+            <div class="collapsible__content">
+              <label class="publisher-form__field">
                 Publisher Dashboard:
                 <input type="url" name="publisherDashboard" />
               </label>
-              <label>
+              <label class="publisher-form__field">
                 Monitor Dashboard:
                 <input type="url" name="monitorDashboard" />
               </label>
-              <label>
+              <label class="publisher-form__field">
                 QA Status Dashboard:
                 <input type="url" name="qaStatusDashboard" />
               </label>
             </div>
           </div>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Custom CSS</h3>
-            <div class="collapsible-content">
+            <div class="collapsible__content">
               <textarea name="customCss" rows="5"></textarea>
             </div>
           </div>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Tags</h3>
-            <div class="collapsible-content">
+            <div class="collapsible__content">
               <input type="text" name="tags" placeholder="Comma separated" />
             </div>
           </div>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Notes</h3>
-            <div class="collapsible-content">
+            <div class="collapsible__content">
               <textarea name="notes" rows="5"></textarea>
             </div>
           </div>
 
-          <div class="form-section">
+          <div class="publisher__form-section">
             <h3 class="collapsible">Additional Fields</h3>
-            <div class="collapsible-content">
-              <table id="extra-fields-table">
+            <div class="collapsible__content">
+              <table class="publisher__pages-table">
                 <thead>
                   <tr>
                     <th>Key</th>
@@ -133,22 +136,30 @@
                     <th></th>
                   </tr>
                 </thead>
-                <tbody id="extra-fields-body"></tbody>
+                <tbody class="publisher__pages-table-extra"></tbody>
               </table>
-              <button type="button" id="add-extra-field">Add Field</button>
+              <button type="button" class="publisher__add-extra-field button">
+                Add Field
+              </button>
             </div>
           </div>
 
-          <div id="buttons">
-            <button type="button" id="save-btn">Save</button>
-            <button type="button" id="delete-btn" class="danger">Delete</button>
-            <button type="button" id="cancel-btn">Cancel</button>
-            <button type="button" id="view-json-btn">View JSON</button>
+          <div class="publisher__actions">
+            <button type="button" class="button publisher__save">Save</button>
+            <button type="button" class="button publisher__delete">
+              Delete
+            </button>
+            <button type="button" class="button publisher__cancel">
+              Cancel
+            </button>
+            <button type="button" class="button publisher__view-json">
+              View JSON
+            </button>
           </div>
         </form>
-        <pre id="json-viewer"></pre>
-      </main>
-    </div>
+        <pre class="publisher__json-viewer"></pre>
+      </div>
+    </main>
 
     <script type="module" src="client/app.js"></script>
 

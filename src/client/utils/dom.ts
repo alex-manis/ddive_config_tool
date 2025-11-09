@@ -6,19 +6,20 @@ export function $<T extends HTMLElement>(selector: string): T {
 }
 
 // DOM elements used in the application
-export const publisherListEl = $<HTMLUListElement>("#publisher-list");
-export const editorTitle = $<HTMLHeadingElement>("#editor-title");
-export const form = $<HTMLFormElement>("#publisher-form");
-export const pagesTableBody = $<HTMLTableSectionElement>("#pages-table tbody");
-export const addPageBtn = $<HTMLButtonElement>("#add-page");
-export const saveBtn = $<HTMLButtonElement>("#save-btn");
-export const viewJsonBtn = $<HTMLButtonElement>("#view-json-btn");
-export const jsonViewer = $<HTMLElement>("#json-viewer");
-export const extraFieldsTableBody = $<HTMLTableSectionElement>("#extra-fields-table tbody");
-export const addExtraFieldBtn = $<HTMLButtonElement>("#add-extra-field");
-export const publisherSearchInput = $<HTMLInputElement>("#publisher-search");
-export const createNewBtn = $<HTMLButtonElement>("#create-new-btn");
-export const deleteBtn = $<HTMLButtonElement>("#delete-btn");
-export const cancelBtn = $<HTMLButtonElement>("#cancel-btn");
-export const appTitle = $<HTMLHeadingElement>("#app-title");
-export const editorTitleText = $<HTMLSpanElement>("#editor-title-text");
+export const publisherListEl = $<HTMLUListElement>(".publisher-list");
+export const editorTitle = $<HTMLHeadingElement>(".editor__title");
+export const form = $<HTMLFormElement>(".publisher__form");
+export const pagesTableBody = $<HTMLTableSectionElement>(".publisher__pages-table-body");
+export const addPageBtn = $<HTMLButtonElement>(".publisher__add-page");
+export const saveBtn = $<HTMLButtonElement>(".publisher__save");
+export const viewJsonBtn = $<HTMLButtonElement>(".publisher__view-json");
+export const jsonViewer = $<HTMLElement>(".publisher__json-viewer");
+export const extraFieldsTableBody = $<HTMLTableSectionElement>(".publisher__pages-table-extra");
+export const addExtraFieldBtn = $<HTMLButtonElement>(".publisher__add-extra-field");
+export const publisherSearchInput = $<HTMLInputElement>(".main__search-input");
+export const createNewBtn = $<HTMLButtonElement>(".main__create-publisher");
+export const deleteBtn = $<HTMLButtonElement>(".publisher__delete");
+export const cancelBtn = $<HTMLButtonElement>(".publisher__cancel");
+export const appTitle = $<HTMLHeadingElement>(".header__title");
+export const editorTitleText = $<HTMLSpanElement>(".editor__title-text");
+export const loader = $<HTMLDivElement>(".editor__title-loader");
