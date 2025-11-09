@@ -1,4 +1,5 @@
 import { pagesTableBody, addPageBtn } from "../utils/dom.js";
+// Create a table row for a page
 function createPageRow(page) {
     const row = document.createElement("tr");
     row.innerHTML = `
@@ -9,10 +10,12 @@ function createPageRow(page) {
   `;
     return row;
 }
+// Render pages into the table
 export function renderPages(pages) {
     pagesTableBody.innerHTML = "";
     pages.forEach(page => pagesTableBody.appendChild(createPageRow(page)));
 }
+// Collect pages from the table into an array
 export function collectPages() {
     const pages = [];
     pagesTableBody.querySelectorAll("tr").forEach(tr => {
@@ -25,6 +28,7 @@ export function collectPages() {
     });
     return pages;
 }
+// Initialize event listeners for the pages table
 export function initPagesTable(onFormInput) {
     addPageBtn.addEventListener("click", () => {
         pagesTableBody.appendChild(createPageRow());

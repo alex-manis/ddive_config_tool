@@ -1,17 +1,14 @@
 import { form, deleteBtn, cancelBtn, saveBtn, editorTitleText } from "./utils/dom.js";
 
+// Define editor modes
 export type EditorMode = "initial" | "editing" | "creating";
 
-/**
- * Обновляет видимость элементов редактора в зависимости от текущего режима.
- * @param mode Текущий режим редактора ('initial', 'editing', 'creating').
- */
+// Update the UI visibility based on the current editor mode
 export function updateEditorUIVisibility(mode: EditorMode) {
   if (mode === "initial") {
     form.style.display = "none";
-    // Используем innerHTML для вложенной ссылки
-    editorTitleText.innerHTML = "Select a publisher or <span id=\"create-link\">create</span> a new one";
-  } else { // 'editing' or 'creating'
+     editorTitleText.innerHTML = "Select a publisher or <span id=\"create-link\">create</span> a new one";
+  } else { 
     form.style.display = "grid";
   }
 

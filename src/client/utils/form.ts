@@ -3,38 +3,37 @@ import { state } from "../state/appState.js";
 import { editorTitleText, form } from "./dom.js";
 import { collectPages, renderPages } from "../components/PagesTable.js";
 import { collectExtraFields, renderExtraFields } from "../components/ExtraFieldsTable.js";
+import { STANDARD_KEYS } from "../constants.js";
 
+// Helper functions to get form values
 export function getStringValue(name: string): string {
   const el = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
   return el?.value || "";
 }
 
+// Helper function to get boolean form values
 export function getBoolValue(name: string): boolean {
   const el = form.elements.namedItem(name) as HTMLInputElement;
   return el?.checked || false;
 }
 
+// Collect all form data into a PublisherConfig object
 export function collectFormData(): PublisherConfig | null {
   if (!state.currentPublisher && !state.isCreating) return null;
-
-  // Создаем базовый объект, содержащий только стандартные поля из оригинала.
-  // Это предотвращает сохранение удаленных "дополнительных полей".
   const baseConfig: Partial<PublisherConfig> = {};
   if (state.currentPublisher) {
     const publisher = state.currentPublisher;
     Object.keys(publisher).forEach(key => {
-      // Используем тот же список стандартных ключей, что и в ExtraFieldsTable
-      const STANDARD_KEYS = ["publisherId", "aliasName", "isActive", "pages", "publisherDashboard", "monitorDashboard", "qaStatusDashboard", "customCss", "tags", "notes"];
-      if (STANDARD_KEYS.includes(key)) {
+        if (STANDARD_KEYS.has(key)) {
         baseConfig[key as keyof PublisherConfig] = publisher[key];
       }
     });
   }
-
   if (state.isCreating) {
     baseConfig.publisherId = getStringValue("publisherId");
   }
 
+  // Assemble the final form data
   const formData = {
     ...baseConfig,
     aliasName: getStringValue("aliasName"),
@@ -52,6 +51,7 @@ export function collectFormData(): PublisherConfig | null {
   return formData;
 }
 
+// Fill the form with data from a PublisherConfig object
 export function fillForm(data: PublisherConfig) {
   editorTitleText.textContent = `Editing: ${data.aliasName}`;
   (form.elements.namedItem("publisherId") as HTMLInputElement).readOnly = !state.isCreating;
@@ -62,24 +62,27 @@ export function fillForm(data: PublisherConfig) {
   (form.elements.namedItem("monitorDashboard") as HTMLInputElement).value = data.monitorDashboard;
   (form.elements.namedItem("qaStatusDashboard") as HTMLInputElement).value = data.qaStatusDashboard;
   (form.elements.namedItem("customCss") as HTMLTextAreaElement).value = data.customCss || "";
-  // Явная обработка полей-массивов для корректного отображения в input
   (form.elements.namedItem("tags") as HTMLInputElement).value = data.tags?.join(", ") || "";
-  const allowedDomainsInput = form.elements.namedItem("allowedDomains") as HTMLInputElement;
+   const allowedDomainsInput = form.elements.namedItem("allowedDomains") as HTMLInputElement;
   if (allowedDomainsInput) {
-    allowedDomainsInput.value = data.allowedDomains?.join(", ") || "";
+    if (Array.isArray(data.allowedDomains)) {
+      allowedDomainsInput.value = data.allowedDomains.join(", ");
+    } else {
+      allowedDomainsInput.value = "";
+    }
   }
   (form.elements.namedItem("notes") as HTMLTextAreaElement).value = data.notes || "";
   renderPages(data.pages);
   renderExtraFields(data);
 }
 
+// Prepare the form for creating a new publisher
 export function prepareFormForCreation() {
   editorTitleText.textContent = "Create New Publisher";
   form.reset();
   (form.elements.namedItem("publisherId") as HTMLInputElement).value = "pub-";
 
   const newPublisherTemplate: Partial<PublisherConfig> = {
-    // Начальное значение ID
     publisherId: "pub-",
     aliasName: "New Publisher",
     isActive: true,

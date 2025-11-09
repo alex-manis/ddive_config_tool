@@ -1,18 +1,20 @@
 import { jsonViewer } from "../utils/dom.js";
+import type { PublisherConfig, ConfigValue, Page } from "../types/interfaces.js";
 
-function normalizeValue(value: any): any {
+// Normalize values by trimming strings and removing empty entries
+function normalizeValue(value: ConfigValue | undefined): ConfigValue | undefined {
   if (value === null || value === undefined) return undefined;
 
   if (Array.isArray(value)) {
     const cleaned = value
       .map(v => (typeof v === "string" ? v.trim() : v))
-      .filter(v => v !== null && v !== undefined && v !== "");
+      .filter((v): v is string | Page => v !== null && v !== undefined && v !== "");
     return cleaned.length > 0 ? cleaned : undefined;
   }
 
   if (typeof value === "object") {
     const entries = Object.entries(value)
-      .map(([k, v]) => [k, normalizeValue(v)])
+      .map(([k, v]) => [k, normalizeValue(v as ConfigValue)])
       .filter(([_, v]) => v !== undefined);
     return entries.length > 0 ? Object.fromEntries(entries) : undefined;
   }
@@ -20,25 +22,17 @@ function normalizeValue(value: any): any {
   return value;
 }
 
-export function computeDiffHTML(orig: any, updated: any, path = ""): string {
+// Deeply compare two values and generate HTML highlighting differences
+function deepDiff(orig: any, updated: any, path = ""): string {
   let result = "";
 
-  orig = normalizeValue(orig);
-  updated = normalizeValue(updated);
-
-  if (typeof updated !== "object" || updated === null) {
-    if (orig !== updated) {
-      result += `<div style="background-color:#d4f8d4;">${path}: ${JSON.stringify(updated)}</div>`;
-    } else {
-      result += `<div>${path}: ${JSON.stringify(updated)}</div>`;
-    }
-    return result;
-  }
+  const normalizedOrig = normalizeValue(orig);
+  const normalizedUpdated = normalizeValue(updated);
 
   if (Array.isArray(updated)) {
     const origArr = Array.isArray(orig) ? orig : [];
     updated.forEach((item, idx) => {
-      result += computeDiffHTML(origArr[idx], item, `${path}[${idx}]`);
+      result += deepDiff(origArr[idx], item, `${path}[${idx}]`);
     });
     if (origArr.length > updated.length) {
       for (let i = updated.length; i < origArr.length; i++) {
@@ -48,30 +42,50 @@ export function computeDiffHTML(orig: any, updated: any, path = ""): string {
     return result;
   }
 
-  const origObj = (orig && typeof orig === "object") ? orig : {};
-  const allKeys = new Set([...Object.keys(origObj), ...Object.keys(updated)]);
+  if (typeof updated !== "object" || updated === null) {
+    if (JSON.stringify(normalizedOrig) !== JSON.stringify(normalizedUpdated)) {
+      if (path) { 
+        result += `<div style="background-color:#d4f8d4;">${path}: ${JSON.stringify(updated)}</div>`;
+      }
+    } else if (path) {
+      result += `<div>${path}: ${JSON.stringify(updated)}</div>`;
+    }
+    return result;
+  }
+
+  const origObj = (orig && typeof orig === "object" && !Array.isArray(orig)) ? orig : {};
+  const updatedObj = updated;
+
+  const allKeys = new Set([...Object.keys(origObj), ...Object.keys(updatedObj)]);
   allKeys.forEach(key => {
     const fullPath = path ? `${path}.${key}` : key;
-    const origValue = origObj[key];
-    const updatedValue = updated[key];
+    const origValue = origObj[key as keyof typeof origObj] as ConfigValue | undefined;
+    const updatedValue = updatedObj[key as keyof typeof updatedObj] as ConfigValue | undefined;
 
     if (updatedValue === undefined) {
       result += `<div style="background-color:#f8d4d4;">${fullPath}: ${JSON.stringify(origValue)} (removed)</div>`;
     } else if (origValue === undefined) {
       result += `<div style="background-color:#d4f8d4;">${fullPath}: ${JSON.stringify(updatedValue)} (added)</div>`;
     } else {
-      result += computeDiffHTML(origValue, updatedValue, fullPath);
+      result += deepDiff(origValue, updatedValue, fullPath);
     }
   });
 
   return result;
 }
 
+// Compute the diff HTML between two PublisherConfig objects
+export function computeDiffHTML(orig: Partial<PublisherConfig>, updated: Partial<PublisherConfig>): string {
+  return deepDiff(orig, updated);
+}
+
+// Show the JSON viewer with given HTML content
 export function showJsonViewer(html: string) {
     jsonViewer.style.display = "block";
     jsonViewer.innerHTML = html;
 }
 
+// Hide the JSON viewer
 export function hideJsonViewer() {
     jsonViewer.style.display = "none";
     jsonViewer.innerHTML = "";

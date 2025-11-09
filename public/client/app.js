@@ -13,6 +13,7 @@ import { renderPublisherList } from "./components/PublisherList.js";
 import { updateEditorUIVisibility } from "./ui.js";
 import { initializeEventListeners } from "./events.js";
 import { handleError } from "./errorHandler.js";
+// Main application entry point
 export function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {

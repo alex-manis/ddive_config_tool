@@ -2,6 +2,7 @@ import type { PublisherListItem } from "../types/interfaces.js";
 import { publisherListEl, publisherSearchInput } from "../utils/dom.js";
 import { state } from "../state/appState.js";
 
+// Render the list of publishers
 export function renderPublisherList(list: PublisherListItem[]): void {
   publisherListEl.innerHTML = "";
   list.forEach(publisher => {
@@ -16,6 +17,7 @@ export function renderPublisherList(list: PublisherListItem[]): void {
   });
 }
 
+// Filter publishers based on search query
 function filterPublishers(query: string): PublisherListItem[] {
   const lowerQuery = query.toLowerCase();
   return state.allPublishers.filter(p =>
@@ -23,6 +25,7 @@ function filterPublishers(query: string): PublisherListItem[] {
   );
 }
 
+// Initialize search input event listener
 publisherSearchInput.addEventListener("input", () => {
   const filtered = filterPublishers(publisherSearchInput.value.trim());
   renderPublisherList(filtered);

@@ -5,6 +5,7 @@ import { updateEditorUIVisibility } from "./ui.js";
 import { initializeEventListeners } from "./events.js";
 import { handleError } from "./errorHandler.js";
 
+// Main application entry point
 export async function main() {
   try {
     state.allPublishers = await fetchPublishers();
@@ -14,6 +15,5 @@ export async function main() {
     handleError("Could not load the list of publishers. Please check the server connection and try again.", error);
   }
 }
-
 initializeEventListeners();
 main().catch(e => console.error(e));

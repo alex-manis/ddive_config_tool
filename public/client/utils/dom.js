@@ -1,9 +1,11 @@
+// Utility function to select DOM elements with type safety
 export function $(selector) {
     const element = document.querySelector(selector);
     if (!element)
         throw new Error(`Element with selector "${selector}" not found.`);
     return element;
 }
+// DOM elements used in the application
 export const publisherListEl = $("#publisher-list");
 export const editorTitle = $("#editor-title");
 export const form = $("#publisher-form");

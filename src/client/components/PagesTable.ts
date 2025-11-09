@@ -1,6 +1,7 @@
 import type { Page } from "../types/interfaces.js";
 import { pagesTableBody, addPageBtn } from "../utils/dom.js";
 
+// Create a table row for a page
 function createPageRow(page?: Page): HTMLTableRowElement {
   const row = document.createElement("tr");
   row.innerHTML = `
@@ -12,11 +13,13 @@ function createPageRow(page?: Page): HTMLTableRowElement {
   return row;
 }
 
+// Render pages into the table
 export function renderPages(pages: Page[]): void {
   pagesTableBody.innerHTML = "";
   pages.forEach(page => pagesTableBody.appendChild(createPageRow(page)));
 }
 
+// Collect pages from the table into an array
 export function collectPages(): Page[] {
   const pages: Page[] = [];
   pagesTableBody.querySelectorAll("tr").forEach(tr => {
@@ -30,6 +33,7 @@ export function collectPages(): Page[] {
   return pages;
 }
 
+// Initialize event listeners for the pages table
 export function initPagesTable(onFormInput: () => void): void {
   addPageBtn.addEventListener("click", () => {
     pagesTableBody.appendChild(createPageRow());

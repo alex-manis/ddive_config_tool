@@ -5,22 +5,20 @@ import { updateEditorUIVisibility } from "./ui.js";
 import { form, publisherListEl } from "./utils/dom.js";
 import { fillForm, prepareFormForCreation } from "./utils/form.js";
 
+// Handle selecting an existing publisher for editing
 export async function onSelectPublisher(file: string) {
   state.isCreating = false;
   state.currentFilename = file;
   state.currentPublisher = await fetchPublisher(state.currentFilename);
-
-  // Сохраняем копию для проверки изменений
   state.originalPublisherData = JSON.parse(JSON.stringify(state.currentPublisher));
   fillForm(state.currentPublisher);
-
-  // Сброс состояния формы
   form.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid"));
   hideJsonViewer();
   resetFormState();
   updateEditorUIVisibility("editing");
 }
 
+// Start creating a new publisher
 export function onStartCreatingPublisher() {
   state.isCreating = true;
   state.currentPublisher = null;
@@ -31,22 +29,21 @@ export function onStartCreatingPublisher() {
   updateEditorUIVisibility("creating");
 }
 
+// Reset the editor view to its initial state
 export function resetEditorView() {
   if (hasUnsavedChanges() && !confirm("You have unsaved changes. Are you sure you want to cancel?")) {
     return;
   }
-
   state.currentPublisher = null;
   state.currentFilename = "";
   state.isCreating = false;
   resetFormState();
 
-  // Снимаем выделение в списке
+// Deselect any selected publisher in the list
   const currentSelected = publisherListEl.querySelector(".list__item--selected");
   if (currentSelected) {
     currentSelected.classList.remove("list__item--selected");
   }
-
   hideJsonViewer();
-  updateEditorUIVisibility("initial"); // Просто обновляем UI
+  updateEditorUIVisibility("initial");
 }

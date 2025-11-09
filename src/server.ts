@@ -61,9 +61,7 @@ app.put("/api/publisher/:filename", async (req, res) => {
         file: filename,
       });
 
-      // Сортируем для порядка
       publishersList.publishers.sort((a: PublisherListItem, b: PublisherListItem) => a.alias.localeCompare(b.alias));
-
       await fs.writeFile(publishersListPath, JSON.stringify(publishersList, null, 2), "utf-8");
     }
 
@@ -73,16 +71,15 @@ app.put("/api/publisher/:filename", async (req, res) => {
   }
 });
 
+// API endpoint to delete a publisher config
 app.delete("/api/publisher/:filename", async (req, res) => {
   try {
     const { filename } = req.params;
     const dataPath = path.join(__dirname, "../data", filename);
     const publishersListPath = path.join(__dirname, "../data/publishers.json");
 
-    // 1. Удаляем файл паблишера
-    await fs.unlink(dataPath);
 
-    // 2. Обновляем publishers.json
+    await fs.unlink(dataPath);
     const publishersListData = await fs.readFile(publishersListPath, "utf-8");
     const publishersList = JSON.parse(publishersListData);
 
@@ -96,7 +93,7 @@ app.delete("/api/publisher/:filename", async (req, res) => {
   }
 });
 
-// Запускаем сервер, только если файл запущен напрямую, а не импортирован
+// Start the server
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);

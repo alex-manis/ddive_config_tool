@@ -1,8 +1,6 @@
 import { extraFieldsTableBody, addExtraFieldBtn } from "../utils/dom.js";
-const STANDARD_KEYS = [
-    "publisherId", "aliasName", "isActive", "pages", "publisherDashboard",
-    "monitorDashboard", "qaStatusDashboard", "customCss", "tags", "notes",
-];
+import { STANDARD_KEYS } from "../constants.js";
+// Helper function to parse string values into appropriate types
 function parseValue(value) {
     const processedValue = value.trim();
     if (processedValue === "")
@@ -15,24 +13,21 @@ function parseValue(value) {
         return null;
     if (!isNaN(Number(processedValue)) && processedValue !== "")
         return Number(processedValue);
-    // Попытка распознать массив в строке (либо JSON, либо через запятую)
     if (processedValue.startsWith("[") && processedValue.endsWith("]")) {
         try {
-            // Попытка распарсить как JSON-массив
             const arr = JSON.parse(processedValue);
             if (Array.isArray(arr))
                 return arr.map(String);
         }
         catch (e) {
-            // Если не удалось, продолжаем как обычная строка
         }
     }
-    // Если есть запятые, считаем, что это массив строк
     if (processedValue.includes(",")) {
         return processedValue.split(",").map(s => s.trim()).filter(Boolean);
     }
     return processedValue;
 }
+// Create a table row for an extra field
 function createExtraFieldRow(key = "", value = "") {
     const row = document.createElement("tr");
     const displayValue = Array.isArray(value) ? value.join(", ") : (typeof value === "object" && value !== null ? JSON.stringify(value) : value);
@@ -43,14 +38,16 @@ function createExtraFieldRow(key = "", value = "") {
   `;
     return row;
 }
+// Render extra fields into the table
 export function renderExtraFields(data) {
     extraFieldsTableBody.innerHTML = "";
     Object.entries(data).forEach(([key, value]) => {
-        if (!STANDARD_KEYS.includes(key)) {
+        if (!STANDARD_KEYS.has(key)) {
             extraFieldsTableBody.appendChild(createExtraFieldRow(key, value));
         }
     });
 }
+// Collect extra fields from the table into an object
 export function collectExtraFields() {
     const extras = {};
     extraFieldsTableBody.querySelectorAll("tr").forEach(tr => {
@@ -62,6 +59,7 @@ export function collectExtraFields() {
     });
     return extras;
 }
+// Initialize event listeners for the extra fields table
 export function initExtraFieldsTable(onFormInput) {
     addExtraFieldBtn.addEventListener("click", () => {
         extraFieldsTableBody.appendChild(createExtraFieldRow());
@@ -72,6 +70,12 @@ export function initExtraFieldsTable(onFormInput) {
         const target = e.target;
         if (target.classList.contains("remove-extra-btn")) {
             (_a = target.closest("tr")) === null || _a === void 0 ? void 0 : _a.remove();
+            onFormInput();
+        }
+    });
+    extraFieldsTableBody.addEventListener("input", e => {
+        const target = e.target;
+        if (target.classList.contains("extra-key") || target.classList.contains("extra-value")) {
             onFormInput();
         }
     });

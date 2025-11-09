@@ -1,5 +1,6 @@
 import { publisherListEl, publisherSearchInput } from "../utils/dom.js";
 import { state } from "../state/appState.js";
+// Render the list of publishers
 export function renderPublisherList(list) {
     publisherListEl.innerHTML = "";
     list.forEach(publisher => {
@@ -13,10 +14,12 @@ export function renderPublisherList(list) {
         publisherListEl.appendChild(li);
     });
 }
+// Filter publishers based on search query
 function filterPublishers(query) {
     const lowerQuery = query.toLowerCase();
     return state.allPublishers.filter(p => p.alias.toLowerCase().includes(lowerQuery) || p.id.toLowerCase().includes(lowerQuery));
 }
+// Initialize search input event listener
 publisherSearchInput.addEventListener("input", () => {
     const filtered = filterPublishers(publisherSearchInput.value.trim());
     renderPublisherList(filtered);

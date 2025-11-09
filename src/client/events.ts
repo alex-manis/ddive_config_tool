@@ -11,11 +11,10 @@ import { validateForm } from "./utils/validation.js";
 import { handleError } from "./errorHandler.js";
 import { showLoader, hideLoader } from "./loader.js";
 
+// Handle form input events to track changes and validate
 function handleFormInput() {
   setDirty();
   validateForm();
-
-  // Dynamic update of the JSON viewer if it is open
   if (jsonViewer.style.display === "block") {
     const data = collectFormData();
     if (!data) return;
@@ -24,18 +23,13 @@ function handleFormInput() {
   }
 }
 
+// Utility function to add a delay
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-/**
- * Обертка для асинхронных операций, которая показывает/скрывает лоадер и обрабатывает ошибки.
- * @param requestFn Асинхронная функция для выполнения.
- * @param errorMessage Сообщение об ошибке для пользователя в случае сбоя.
- */
+// Wrap async operations with loading spinner and error handling
 async function withLoading(requestFn: () => Promise<any>, errorMessage?: string) {
   showLoader();
   try {
-    // Добавляем искусственную задержку, чтобы спиннер был виден
-    // даже при очень быстрых локальных запросах.
     await Promise.all([requestFn(), delay(300)]);
   } catch (error) {
     if (errorMessage) {
@@ -46,23 +40,23 @@ async function withLoading(requestFn: () => Promise<any>, errorMessage?: string)
   }
 }
 
+// Initialize all event listeners for the application
 export function initializeEventListeners() {
   form.addEventListener("input", handleFormInput);
   initPagesTable(handleFormInput);
   initExtraFieldsTable(handleFormInput);
 
-  // Динамическое обновление Publisher ID при создании
-  const aliasNameInput = form.elements.namedItem("aliasName") as HTMLInputElement;
+   const aliasNameInput = form.elements.namedItem("aliasName") as HTMLInputElement;
   aliasNameInput.addEventListener("input", () => {
     if (state.isCreating) {
       const publisherIdInput = form.elements.namedItem("publisherId") as HTMLInputElement;
       const firstWord = aliasNameInput.value.trim().split(/\s+/)[0].toLowerCase();
       publisherIdInput.value = `pub-${firstWord}`;
-      // Так как мы меняем значение программно, нужно вызвать валидацию
-      handleFormInput();
+          handleFormInput();
     }
   });
 
+// Collapsible sections functionality
   document.querySelectorAll(".collapsible").forEach(header => {
     header.addEventListener("click", () => {
       header.classList.toggle("active");
@@ -70,12 +64,12 @@ export function initializeEventListeners() {
       if (content.style.display && content.style.display !== "none") {
         content.style.display = "none";
       } else {
-        // Используем grid или flex в зависимости от содержимого
-        content.style.display = "block";
+               content.style.display = "block";
       }
     });
   });
 
+  // Handle selecting a publisher from the list
   publisherListEl.addEventListener("click", async (e) => {
     const target = e.target as HTMLElement;
     if (target.tagName !== "LI" || !target.dataset.file) return;
@@ -84,20 +78,18 @@ export function initializeEventListeners() {
     if (hasUnsavedChanges() && !confirm("You have unsaved changes. Continue without saving?")) {
       return;
     }
-    // Снимаем выделение с предыдущего активного элемента
     const currentSelected = publisherListEl.querySelector(".list__item--selected");
     if (currentSelected) {
       currentSelected.classList.remove("list__item--selected");
     }
-    // Выделяем новый выбранный элемент
     target.classList.add("list__item--selected");
-
     withLoading(
       () => onSelectPublisher(selectedFile),
       `Could not load data for ${selectedFile}. The file may be missing or corrupted.`
     );
   });
 
+  // View JSON diff button functionality
   viewJsonBtn.addEventListener("click", () => {
     if (jsonViewer.style.display === "block") {
       hideJsonViewer();
@@ -111,6 +103,7 @@ export function initializeEventListeners() {
     }
   });
 
+  // Create new publisher button functionality
   const createNewHandler = () => {
     if (hasUnsavedChanges() && !confirm("You have unsaved changes. Are you sure you want to start creating a new publisher?")) {
       return;
@@ -120,16 +113,18 @@ export function initializeEventListeners() {
 
   createNewBtn.addEventListener("click", createNewHandler);
 
-  // Используем делегирование событий для динамически создаваемой ссылки
+// Create new publisher link in the editor title
   editorTitle.addEventListener("click", (e) => {
     if ((e.target as HTMLElement).id === "create-link") {
       createNewHandler();
     }
   });
 
+  // Cancel button functionality
   appTitle.addEventListener("click", resetEditorView);
   cancelBtn.addEventListener("click", resetEditorView);
 
+  // Delete button functionality
   deleteBtn.addEventListener("click", async () => {
     if (state.isCreating || !state.currentFilename) return;
 
@@ -144,11 +139,11 @@ export function initializeEventListeners() {
     }, "Error deleting publisher.");
   });
 
+  // Save button functionality
   saveBtn.addEventListener("click", async () => {
     if (!form.reportValidity()) return;
     const data = collectFormData();
     if (!data) return;
-
     withLoading(async () => {
       const { newFilename } = await savePublisher(state.currentFilename, data, state.isCreating);
       alert("Publisher saved!");
@@ -164,6 +159,7 @@ export function initializeEventListeners() {
     }, "Error saving publisher.");
   });
 
+  // Warn user of unsaved changes before leaving the page
   window.addEventListener("beforeunload", e => {
     if (hasUnsavedChanges()) {
       e.preventDefault();
