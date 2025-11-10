@@ -12,13 +12,13 @@ import { computeDiffHTML, hideJsonViewer, showJsonViewer } from "./components/Js
 import { initExtraFieldsTable } from "./components/ExtraFieldsTable.js";
 import { initPagesTable } from "./components/PagesTable.js";
 import { renderPublisherList } from "./components/PublisherList.js";
-import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./editor.js";
+import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./components/editor.js";
 import { hasUnsavedChanges, state, setDirty } from "./state/appState.js";
 import { cancelBtn, createNewBtn, deleteBtn, form, appTitle, jsonViewer, publisherListEl, saveBtn, viewJsonBtn, editorTitle } from "./utils/dom.js";
 import { collectFormData, setTableManagers } from "./utils/form.js";
 import { validateForm } from "./utils/validation.js";
-import { handleError } from "./errorHandler.js";
-import { showLoader, hideLoader } from "./loader.js";
+import { handleError } from "./utils/errorHandler.js";
+import { showLoader, hideLoader } from "./utils/loader.js";
 // Handle form input events to track changes and validate
 function handleFormInput() {
     setDirty();

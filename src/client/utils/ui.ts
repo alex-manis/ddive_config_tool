@@ -1,4 +1,4 @@
-import { form, deleteBtn, cancelBtn, saveBtn, editorTitleText } from "./utils/dom.js";
+import { form, deleteBtn, cancelBtn, saveBtn, editorTitleText, loader, viewJsonBtn } from "./dom.js";
 
 // Define editor modes
 export type EditorMode = "initial" | "editing" | "creating";
@@ -15,4 +15,5 @@ export function updateEditorUIVisibility(mode: EditorMode) {
   deleteBtn.style.display = mode === "editing" ? "inline-block" : "none";
   cancelBtn.style.display = mode === "initial" ? "none" : "inline-block";
   saveBtn.disabled = mode === "initial";
+  viewJsonBtn.style.display = mode === "initial" ? "none" : "inline-block";
 }

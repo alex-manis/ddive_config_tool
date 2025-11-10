@@ -1,4 +1,4 @@
-import { loader } from "./utils/dom.js";
+import { loader } from "./dom.js";
 
 
 export function showLoader() {

@@ -1,9 +1,9 @@
-import { getPublisher } from "./api/publishers.js";
-import { hideJsonViewer } from "./components/JsonDiffViewer.js";
-import { state, resetFormState, hasUnsavedChanges } from "./state/appState.js";
-import { updateEditorUIVisibility } from "./ui.js";
-import { form, publisherListEl } from "./utils/dom.js";
-import { fillForm, prepareFormForCreation } from "./utils/form.js";
+import { getPublisher } from "../api/publishers.js";
+import { hideJsonViewer } from "./JsonDiffViewer.js";
+import { state, resetFormState, hasUnsavedChanges } from "../state/appState.js";
+import { updateEditorUIVisibility } from "../utils/ui.js";
+import { form, publisherListEl } from "../utils/dom.js";
+import { fillForm, prepareFormForCreation } from "../utils/form.js";
 
 // Helper function to deselect the currently selected publisher in the list
 function deselectCurrentPublisher() {

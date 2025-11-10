@@ -1,5 +1,5 @@
 import type { PublisherConfig, PublisherListItem } from "../types/interfaces.js";
-import { BASE_URL } from "../constants.js";
+import { BASE_URL } from "../components/constants.js";
 
 
 // Helper function to check fetch responses

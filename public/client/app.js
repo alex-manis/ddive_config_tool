@@ -10,9 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { getPublishers } from "./api/publishers.js";
 import { state } from "./state/appState.js";
 import { renderPublisherList } from "./components/PublisherList.js";
-import { updateEditorUIVisibility } from "./ui.js";
+import { updateEditorUIVisibility } from "./utils/ui.js";
 import { initializeEventListeners } from "./events.js";
-import { handleError } from "./errorHandler.js";
+import { handleError } from "./utils/errorHandler.js";
 // Main application entry point
 export function main() {
     return __awaiter(this, void 0, void 0, function* () {

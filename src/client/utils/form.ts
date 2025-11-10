@@ -3,7 +3,7 @@ import { state } from "../state/appState.js";
 import { editorTitleText, form } from "./dom.js";
 import type { PagesManager } from "../components/PagesTable.js";
 import type { ExtraFieldsManager } from "../components/ExtraFieldsTable.js";
-import { STANDARD_KEYS } from "../constants.js";
+import { STANDARD_KEYS } from "../components/constants.js";
 
 let pagesManager: PagesManager;
 let extraFieldsManager: ExtraFieldsManager;

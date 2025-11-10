@@ -1,4 +1,4 @@
-import { form, deleteBtn, cancelBtn, saveBtn, editorTitleText, viewJsonBtn } from "./utils/dom.js";
+import { form, deleteBtn, cancelBtn, saveBtn, editorTitleText, viewJsonBtn } from "./dom.js";
 // Update the UI visibility based on the current editor mode
 export function updateEditorUIVisibility(mode) {
     if (mode === "initial") {
