@@ -4,6 +4,8 @@ A web-based GUI for managing publisher configuration files for the DeeperDive pl
 
 ## Live Demo
 
+[![Demo of DeeperDive Config Tool](public/assets/demo.gif)](https://alex-manis.github.io/ddive_config_tool/)
+
 The application is deployed on GitHub Pages and can be accessed here:
 **[https://alex-manis.github.io/ddive_config_tool/](https://alex-manis.github.io/ddive_config_tool/)**
 
