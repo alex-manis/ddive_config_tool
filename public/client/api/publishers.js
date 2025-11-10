@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { BASE_URL } from "../components/constants.js";
+import { BASE_URL } from "../utils/constants.js";
 // Helper function to check fetch responses
 function checkResponse(res) {
     return __awaiter(this, void 0, void 0, function* () {

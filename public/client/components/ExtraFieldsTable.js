@@ -1,5 +1,5 @@
 import { extraFieldsTableBody, addExtraFieldBtn } from "../utils/dom.js";
-import { STANDARD_KEYS } from "./constants.js";
+import { STANDARD_KEYS } from "../utils/constants.js";
 import { initTableManager, parseValue } from "../utils/tableManager.js";
 // Create a table row for an extra field
 function createExtraFieldRow(key = "", value = "") {
