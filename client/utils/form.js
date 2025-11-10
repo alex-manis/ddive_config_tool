@@ -1,6 +1,6 @@
 import { state } from "../state/appState.js";
 import { editorTitleText, form } from "./dom.js";
-import { STANDARD_KEYS } from "../components/constants.js";
+import { STANDARD_KEYS } from "./constants.js";
 let pagesManager;
 let extraFieldsManager;
 export function setTableManagers(pm, efm) {

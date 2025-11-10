@@ -12,7 +12,7 @@ import { computeDiffHTML, hideJsonViewer, showJsonViewer } from "./components/Js
 import { initExtraFieldsTable } from "./components/ExtraFieldsTable.js";
 import { initPagesTable } from "./components/PagesTable.js";
 import { renderPublisherList } from "./components/PublisherList.js";
-import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./components/editor.js";
+import { onSelectPublisher, onStartCreatingPublisher, resetEditorView } from "./utils/editor.js";
 import { hasUnsavedChanges, state, setDirty } from "./state/appState.js";
 import { cancelBtn, createNewBtn, deleteBtn, form, appTitle, jsonViewer, publisherListEl, saveBtn, viewJsonBtn, editorTitle } from "./utils/dom.js";
 import { collectFormData, setTableManagers } from "./utils/form.js";
