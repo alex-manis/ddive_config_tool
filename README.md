@@ -44,3 +44,14 @@ The project is organized into the following main directories:
   - `utils/`: Helper functions for DOM manipulation, form handling, validation, etc.
   - `app.ts`: The main application entry point that initializes event listeners and starts the app.
 - `data/`: Stores the publisher configuration data as individual JSON files.
+
+## Future Improvements
+
+- **User Authorization**: Implement a simple authentication system for a predefined list of internal users, as this is an internal company tool.
+- **Enhanced User Experience**:
+  - Replace native browser `alert` and `confirm` dialogs with custom modal windows for a more seamless and modern user experience.
+  - Continuously refine form fields and layouts based on user feedback to improve usability.
+- **Performance Optimization**: Further optimize the application's performance, especially when handling a large number of publisher configurations.
+- **Responsive Design**: Improve the layout and user interface for better usability on tablets and mobile devices.
+- **Automated Testing**: Introduce a testing framework (like Jest or Vitest) to add unit and integration tests, ensuring code quality and stability.
+- **CI/CD Pipeline**: Set up a GitHub Actions workflow to automate TypeScript compilation and deployment to GitHub Pages on every push to the `main` branch.
