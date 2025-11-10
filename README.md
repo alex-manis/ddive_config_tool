@@ -32,6 +32,12 @@ This project is built with a focus on modern, vanilla web technologies without a
   - **HTTP-Server**: A simple, zero-configuration command-line HTTP server for local development.
   - **GitHub Pages**: For hosting the static application.
 
+## Branding and Assets
+
+The user interface and branding elements are inspired by the Taboola brand book to ensure a familiar look and feel for the target users (Taboola Support Engineers).
+
+- **Logos**: The application uses the official logos for DeeperDive and Taboola.
+
 ## Project Structure
 
 The project is organized into the following main directories:
@@ -48,6 +54,7 @@ The project is organized into the following main directories:
 ## Future Improvements
 
 - **User Authorization**: Implement a simple authentication system for a predefined list of internal users, as this is an internal company tool.
+- **Change Auditing**: Add metadata to each publisher configuration to track who made the last change and when (user, date, time).
 - **Enhanced User Experience**:
   - Replace native browser `alert` and `confirm` dialogs with custom modal windows for a more seamless and modern user experience.
   - Continuously refine form fields and layouts based on user feedback to improve usability.
