@@ -4,10 +4,10 @@ A web-based GUI for managing JSON configuration files. This tool simplifies the 
 
 ## Live Demo
 
-[![Demo of JSON Config Tool](public/assets/demo.gif)](https://alex-manis.github.io/config_tool_frontend)
+[![Demo of JSON Config Tool](https://alex-manis.github.io/config_tool_frontend/assets/demo.gif)](https://alex-manis.github.io/config_tool_frontend)
 
 The application is deployed on GitHub Pages and can be accessed here:
-**[https://alex-manis.github.io/ddive_config_tool/](https://alex-manis.github.io/config_tool_frontend)**
+**[https://alex-manis.github.io/config_tool_frontend/](https://alex-manis.github.io/config_tool_frontend)**
 
 ## Core Features
 
