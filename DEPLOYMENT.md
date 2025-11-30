@@ -58,3 +58,4 @@ GitHub Pages должен раздавать папку `public/`:
 - `public/assets/` - изображения и ресурсы
 - `public/styles.css` - стили
 
+
